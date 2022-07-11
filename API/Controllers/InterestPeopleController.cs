@@ -28,17 +28,22 @@ public class InterestPeopleController : ControllerBase
         }
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Person>> AddInterestPerson(int interestID, int entityID)
+    [HttpPost, Route("{personID:int}")]
+    public async Task<ActionResult<Person>> AddInterestPerson(int interestID, int personID)
     {
         try
         {
-            var person = await _interestPeople.Add(interestID, entityID);
+            var people = await _interestPeople.Get(interestID);
+
+            if (people.Any(p => p.PersonID == personID))
+                return Ok(people); 
+                
+            var person = await _interestPeople.Add(interestID, personID);
 
             if (person is null)
                 return BadRequest();
 
-            return CreatedAtAction(nameof(GetInterestPeople), interestID, person);
+            return Ok(await _interestPeople.Get(interestID));
         }
         catch (Exception error)
         {
@@ -46,17 +51,22 @@ public class InterestPeopleController : ControllerBase
         }
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Person>> DeleteInterestPerson(int interestID, int entityID)
+    [HttpDelete, Route("{personID:int}")]
+    public async Task<ActionResult<Person>> DeleteInterestPerson(int interestID, int personID)
     {
         try
         {
-            var person = await _interestPeople.Delete(interestID, entityID);
+            var people = await _interestPeople.Get(interestID);
+
+            if (people.All(p => p.PersonID != personID))
+                return NotFound($"Person with ID={personID} is not assigned to Interest with ID={interestID}");
+            
+            var person = await _interestPeople.Delete(interestID, personID);
 
             if (person is null)
-                return NotFound($"Could not remove Person with ID={entityID} from Interest with ID={interestID}!");
+                return NotFound($"Could not remove Person with ID={personID} from Interest with ID={interestID}!");
 
-            return person;
+            return Ok(await _interestPeople.Get(interestID));
         }
         catch (Exception error)
         {
