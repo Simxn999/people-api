@@ -28,12 +28,12 @@ public class PersonInterestsController : ControllerBase
         }
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Interest>> AddPersonInterest(int personID, int entityID)
+    [HttpPost, Route("{interestID:int}")]
+    public async Task<ActionResult<Interest>> AddPersonInterest(int personID, int interestID)
     {
         try
         {
-            var interest = await _personInterests.Add(personID, entityID);
+            var interest = await _personInterests.Add(personID, interestID);
 
             if (interest is null)
                 return BadRequest();
@@ -46,15 +46,15 @@ public class PersonInterestsController : ControllerBase
         }
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Interest>> DeletePersonInterest(int personID, int entityID)
+    [HttpDelete, Route("{interestID:int}")]
+    public async Task<ActionResult<Interest>> DeletePersonInterest(int personID, int interestID)
     {
         try
         {
-            var result = await _personInterests.Delete(personID, entityID);
+            var result = await _personInterests.Delete(personID, interestID);
 
             if (result is null)
-                return NotFound($"Could not remove Interest with ID={entityID} from Person with ID={personID}!");
+                return NotFound($"Could not remove Interest with ID={interestID} from Person with ID={personID}!");
 
             return result;
         }

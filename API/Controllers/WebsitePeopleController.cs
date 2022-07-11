@@ -28,12 +28,12 @@ public class WebsitePeopleController : ControllerBase
         }
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Person>> AddWebsitePerson(int websiteID, int entityID)
+    [HttpPost, Route("{personID:int}")]
+    public async Task<ActionResult<Person>> AddWebsitePerson(int websiteID, int personID)
     {
         try
         {
-            var person = await _websitePeople.Add(websiteID, entityID);
+            var person = await _websitePeople.Add(websiteID, personID);
 
             if (person is null)
                 return BadRequest();
@@ -46,15 +46,15 @@ public class WebsitePeopleController : ControllerBase
         }
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Person>> DeleteWebsitePerson(int websiteID, int entityID)
+    [HttpDelete, Route("{personID:int}")]
+    public async Task<ActionResult<Person>> DeleteWebsitePerson(int websiteID, int personID)
     {
         try
         {
-            var person = await _websitePeople.Delete(websiteID, entityID);
+            var person = await _websitePeople.Delete(websiteID, personID);
 
             if (person is null)
-                return NotFound($"Could not remove Person with ID={entityID} from Website with ID={websiteID}!");
+                return NotFound($"Could not remove Person with ID={personID} from Website with ID={websiteID}!");
 
             return person;
         }
